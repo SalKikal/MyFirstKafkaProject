@@ -58,8 +58,10 @@ if is_valid:
 else:
     # Send validation message to monitoring topic
     message = {
-        "message": validation_message,
-        "timestamp": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))  # Add current datetime
+        "err_type": validation_message,
+        "ts": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())),  # Add current datetime
+        "sensor": None,
+        "station_id": data["station_id"]
     }
     producer.send('monitoring', value=message)
 
