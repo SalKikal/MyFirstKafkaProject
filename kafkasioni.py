@@ -60,7 +60,7 @@ else:
     message = {
         "err_type": validation_message,
         "ts": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())),  # Add current datetime
-        "sensor": None,
+        "sensor_id": None,
         "station_id": data["station_id"]
     }
     producer.send('monitoring', value=message)
