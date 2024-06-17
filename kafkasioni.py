@@ -24,10 +24,10 @@ producer = KafkaProducer(
 data = {
     "ts": "2000-01-01T00:00:00",  
     "station_id": "station_1",
-    "sensor0": "Nan",
-    "sensor1": "NaN",
-    "sensor2": 100,
-    "sensor3": 150
+    "sensor0": 99,
+    "sensor1": 89,
+    "sensor2": 160,
+    "sensor3": 20
 }
 
 # Validation rules
@@ -37,11 +37,11 @@ def validate_data(data):
         return False, ValidationMessage.TIMESTAMP_VALUE_ERROR.value
     
     # Rule 4: If all sensor values are Nans, then set the row as invalid
-    if ((data["sensor0"] == "Nan") and (data["sensor1"] == "Nan") and (data["sensor2"] == "Nan") and (data["sensor3"] == "Nan")):
+    if ((data["sensor0"] == None) and (data["sensor1"] == None) and (data["sensor2"] == None) and (data["sensor3"] == None)):
         return False, ValidationMessage.INVALID_ROW.value
     
     # Rule 2: If any sensor value is Nan, set it as invalid row
-    if ((data["sensor0"] == "Nan") or (data["sensor1"] == "Nan") or (data["sensor2"] == "Nan") or (data["sensor3"] == "Nan")):
+    if ((data["sensor0"] == None) or (data["sensor1"] ==  None) or (data["sensor2"] == None) or (data["sensor3"] == None)):
         return False, ValidationMessage.NOT_CONVERTIBLE_TO_FLOAT.value
     
     # Rule 3: If value is outside [-100.0, 100.0], then set it as invalid
