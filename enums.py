@@ -8,3 +8,4 @@ class ValidationMessage(Enum):
   INVALID_ROW = "InvalidRow"
   TIMESTAMP_FORMAT_ERROR = "TimestampFormatError"
   STATION_ID = "StationIdError"
+  NONE = "None"
