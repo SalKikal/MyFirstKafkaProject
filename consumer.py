@@ -1,17 +1,11 @@
-from enum import Enum
 import json
 import math
 import re
 import time
 from kafka import KafkaConsumer, KafkaProducer
 from datetime import datetime
+from enums import ValidationMessage
 
-class ValidationMessage(Enum):
-  TIMESTAMP_VALUE_ERROR = "TimestampValueError"
-  NOT_CONVERTIBLE_TO_FLOAT = "NotConvertibleToFloat"
-  INVALID_VALUE = "InvalidValue"
-  INVALID_ROW = "InvalidRow"
-  TIMESTAMP_FORMAT_ERROR = "TimestampFormatError"
 
 producer = KafkaProducer(
     bootstrap_servers=['localhost:9094'],

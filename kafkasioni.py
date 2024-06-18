@@ -1,14 +1,7 @@
 from kafka import KafkaProducer
 import json
 import time
-from enum import Enum
-
-# Validation messages for monitoring topic
-class ValidationMessage(Enum):
-    TIMESTAMP_VALUE_ERROR = "TimestampValueError"
-    NOT_CONVERTIBLE_TO_FLOAT = "NotConvertibleToFloat"
-    INVALID_VALUE = "InvalidValue"
-    INVALID_ROW = "InvalidRow"
+from enums import ValidationMessage
 
 # Kafka configuration
 bootstrap_servers = ['localhost:9092']
