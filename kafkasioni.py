@@ -1,7 +1,6 @@
 from kafka import KafkaProducer
 import json
 import time
-import random
 from enum import Enum
 
 # Validation messages for monitoring topic
@@ -30,25 +29,20 @@ data = {
     "sensor3": 20
 }
 
+sensor_keys = ['sensor0', 'sensor1', 'sensor2', 'sensor3']
+
 # Validation rules
 def validate_data(data):
     # Rule 1: Ignore data with timestamp value "1970-01-01T00:00:00"
     if data["ts"] == "1970-01-01T00:00:00":
         return False, ValidationMessage.TIMESTAMP_VALUE_ERROR.value
     
-    # Rule 4: If all sensor values are Nans, then set the row as invalid
-    if ((data["sensor0"] == None) and (data["sensor1"] == None) and (data["sensor2"] == None) and (data["sensor3"] == None)):
-        return False, ValidationMessage.INVALID_ROW.value
-    
-    # Rule 2: If any sensor value is Nan, set it as invalid row
-    if ((data["sensor0"] == None) or (data["sensor1"] ==  None) or (data["sensor2"] == None) or (data["sensor3"] == None)):
-        return False, ValidationMessage.NOT_CONVERTIBLE_TO_FLOAT.value
-    
-    # Rule 3: If value is outside [-100.0, 100.0], then set it as invalid
-    if any(data[sensor] < -100.0 or data[sensor] > 100.0 for sensor in data if isinstance(data[sensor], float)):
-        return False, ValidationMessage.INVALID_VALUE.value
-    
+    for sensor in sensor_keys:
+        value = data[sensor]
+        if value < -100.0 or value > 100.0:
+           return False, ValidationMessage.INVALID_VALUE.value  
     return True, None
+    
 
 # Validate data and send to appropriate topic
 is_valid, validation_message = validate_data(data)
