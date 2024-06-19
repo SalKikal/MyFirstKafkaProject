@@ -1,4 +1,5 @@
 import json
+import random
 import time
 from kafka import KafkaProducer
 
@@ -11,11 +12,11 @@ test_cases = [
     # Valid case
     {
         "ts": "2023-06-15T12:00:00",
-        "station_id": "ST0001",
-        "sensor0": "12.345",
-        "sensor1": "-45.678",
-        "sensor2": "100.000",
-        "sensor3": "50.123"
+        "station_id": f"ST{random.randint(1000, 9999)}",
+        "sensor0": f"{(round(random.uniform(-100.000, 100.000), 3)):.3f}",
+        "sensor1": f"{(round(random.uniform(-100.000, 100.000), 3)):.3f}",
+        "sensor2": f"{(round(random.uniform(-100.000, 100.000), 3)):.3f}",
+        "sensor3": f"{(round(random.uniform(-100.000, 100.000), 3)):.3f}"
     },
     # Invalid timestamp format
     {
