@@ -75,7 +75,7 @@ test_cases = [
 
 while True:
     for case in test_cases:
-      producer.send("test", value=case)
+      producer.send("monitoring", value=case)
       time.sleep(1)
 
 
