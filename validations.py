@@ -43,9 +43,7 @@ def isValidSensorsRange(value):
   
 
 def validate_data(data):
-    if data is None:
-        return False, ValidationMessage.NONE.value
-    
+
     if not validations.isValidTsFormat(data["ts"]):
         return False, ValidationMessage.TIMESTAMP_FORMAT_ERROR.value
     

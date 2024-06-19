@@ -8,6 +8,7 @@ from validations import validate_data
 bootstrap_servers = ['localhost:9094']
 
 # Create Kafka producer
+
 producer = KafkaProducer(
     bootstrap_servers=bootstrap_servers,
     value_serializer=lambda v: json.dumps(v).encode('utf-8')
@@ -37,15 +38,13 @@ def getSensorData(msg):
     return None
 
 def sendToMonitor(validation_message, station_id):
-  
-  if(validation_message != ValidationMessage.NONE):
-    message = {
-      "err_type": validation_message,
-      "ts": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())),  # Add current datetime
-      "sensor_id": None,
-      "station_id": station_id
-    }
-    producer.send('monitoring', value=message)
+  message = {
+    "err_type": validation_message,
+    "ts": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())),  # Add current datetime
+    "sensor_id": None,
+    "station_id": station_id
+  }
+  producer.send('monitoring', value=message)
 
 def sendToValidData(data):
   producer.send('valid_data', value=data)
