@@ -61,7 +61,7 @@ def isValid(data):
         value = data[sensor] 
         if not validations.isValidSensorValue(value):
           data[sensor]  = math.nan
-          sendToMonitor(ValidationMessage.INVALID_VALUE, data["station_id"])
+          sendToMonitor(ValidationMessage.NOT_CONVERTIBLE_TO_FLOAT, data["station_id"])
         return False
 
   for sensor in constants.sensor_keys:

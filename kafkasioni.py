@@ -48,7 +48,7 @@ def validate_data(data):
         value = data[sensor]
         if not validations.isValidSensorValue(value):
             data[sensor] = math.nan
-            return False, ValidationMessage.INVALID_VALUE.value
+            return False, ValidationMessage.NOT_CONVERTIBLE_TO_FLOAT.value
 
     for sensor in constants.sensor_keys:
         value = data[sensor]
