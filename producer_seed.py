@@ -79,4 +79,4 @@ while True:
       time.sleep(1)
 
 
-producer.flush()
+#producer.flush()

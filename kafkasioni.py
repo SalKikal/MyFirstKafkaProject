@@ -73,5 +73,4 @@ while True:
   handleMessage(msg)
   consumer.commit()
 
-# Block until all async messages are sent
-producer.flush()
+# producer.flush()
