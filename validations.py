@@ -18,7 +18,8 @@ def isValidStation_id(station_id):
     pattern = r'^ST(?!0000)\d{4}$'
     return re.match(pattern, station_id) is not None
 
-#Validate sensors values (if its possible to convert into float)
+#Validate sensors values
+#checks for a string that represents a floating-point number with exactly three digits after the decimal point
 def isValidSensorValue(value):  
   try:
       float(value)

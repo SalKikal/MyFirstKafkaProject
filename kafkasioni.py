@@ -16,9 +16,9 @@ producer = KafkaProducer(
 
 consumer = KafkaConsumer(
     bootstrap_servers=bootstrap_servers,
-    auto_offset_reset='earliest',
-    enable_auto_commit=False,
-    group_id='sensor_consumer'
+    auto_offset_reset='earliest', #When the consumer group has no initial offset it will receive all messages from the start of the topic.
+    enable_auto_commit=False, 
+    group_id='sensor_consumer' #Specify the consumer group that the consumer belongs to
 )
 
 consumer.subscribe(topics=['raw_data'])
