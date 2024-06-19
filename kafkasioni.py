@@ -1,13 +1,11 @@
-from kafka import KafkaProducer
+from kafka import KafkaConsumer, KafkaProducer
 import json
 import time
-from enums import ValidationMessage  # Ensure this is properly defined in your project
-import constants  # Ensure this is properly defined in your project
-import validations  # Ensure this is properly defined in your project
-import math
+from enums import ValidationMessage
+from validations import validate_data
 
 # Kafka configuration
-bootstrap_servers = ['localhost:9092']
+bootstrap_servers = ['localhost:9094']
 
 # Create Kafka producer
 producer = KafkaProducer(
@@ -15,64 +13,66 @@ producer = KafkaProducer(
     value_serializer=lambda v: json.dumps(v).encode('utf-8')
 )
 
-# Temporary data structure for test purpose
-data = {
-    "ts": "2000-01-01T00:00:00",
-    "station_id": "ST0001",
-    "sensor0": 99,
-    "sensor1": 89,
-    "sensor2": 160,
-    "sensor3": 20
-}
+consumer = KafkaConsumer(
+    bootstrap_servers=bootstrap_servers,
+    auto_offset_reset='earliest',
+    enable_auto_commit=False,
+    group_id='sensor_consumer'
+)
 
-def validate_data(data):
-    if data is None:
-        return False, ValidationMessage.NONE.value
-    
-    if not validations.isValidTsFormat(data["ts"]):
-        return False, ValidationMessage.TIMESTAMP_FORMAT_ERROR.value
-    
-    if not validations.isValidStation_id(data["station_id"]):
-        return False, ValidationMessage.STATION_ID.value
-    
-    if not validations.isValidTsValue(data["ts"]):
-        return False, ValidationMessage.TIMESTAMP_VALUE_ERROR.value
-    
-    if not (validations.isValidSensorValue(data["sensor0"]) and 
-            validations.isValidSensorValue(data["sensor1"]) and 
-            validations.isValidSensorValue(data["sensor2"]) and 
-            validations.isValidSensorValue(data["sensor3"])):
-        return False, ValidationMessage.INVALID_ROW.value
+consumer.subscribe(topics=['raw_data'])
 
-    for sensor in constants.sensor_keys:
-        value = data[sensor]
-        if not validations.isValidSensorValue(value):
-            data[sensor] = math.nan
-            return False, ValidationMessage.NOT_CONVERTIBLE_TO_FLOAT.value
+def getSensorData(msg):
 
-    for sensor in constants.sensor_keys:
-        value = data[sensor]
-        if not validations.isValidSensorsRange(value):
-            return False, ValidationMessage.INVALID_VALUE.value
-    
-    return True, None
+  if msg:
+    for _, value in msg.items():
+      for val in value:
+        try:
+          json_data = json.loads(val.value.decode('utf-8'))
+          return json_data
+        except:
+          print("Can not convert to json")
+          return None
+  else:
+    return None
 
-# Validate data and send to appropriate topic
-is_valid, validation_message = validate_data(data)
+def sendToMonitor(validation_message, station_id):
+  
+  if(validation_message != ValidationMessage.NONE):
+    message = {
+      "err_type": validation_message,
+      "ts": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())),  # Add current datetime
+      "sensor_id": None,
+      "station_id": station_id
+    }
+    producer.send('monitoring', value=message)
 
-if is_valid:
+def sendToValidData(data):
+  producer.send('valid_data', value=data)
+
+def handleMessage(msg):
+
+  data = getSensorData(msg)
+
+  if data is None:
+    return
+
+  # Validate data and send to appropriate topic
+  is_valid, validation_message = validate_data(data)
+
+  if is_valid:
     # Send data to valid_data topic
-    producer.send('valid_data', value=data)
-else:
+    print(data)
+    sendToValidData(data)
+  else:
     # Send validation message to monitoring topic
-    if(validation_message != ValidationMessage.NONE):
-        message = {
-            "err_type": validation_message,
-            "ts": time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())),  # Add current datetime
-            "sensor_id": None,
-            "station_id": data["station_id"]
-        }
-        producer.send('monitoring', value=message)
+    print(validation_message)
+    sendToMonitor(validation_message, data["station_id"])
+
+while True:
+  msg = consumer.poll(timeout_ms=500)
+  handleMessage(msg)
+  consumer.commit()
 
 # Block until all async messages are sent
 producer.flush()
