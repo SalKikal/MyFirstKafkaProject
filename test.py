@@ -10,6 +10,7 @@ class TestValidations(unittest.TestCase):
 
     def test_isValidStation_id(self):
         self.assertTrue(validations.isValidStation_id("ST0001"))
+        self.assertFalse(validations.isValidStation_id("ST0000"))
         self.assertFalse(validations.isValidStation_id("INVALID"))
 
     def test_isValidSensorValue(self):

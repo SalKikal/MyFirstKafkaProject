@@ -15,7 +15,7 @@ def isValidTsFormat(ts):
 
 #Validate station_id  
 def isValidStation_id(station_id):
-    pattern = r'^ST\d{4}$'
+    pattern = r'^ST(?!0000)\d{4}$'
     return re.match(pattern, station_id) is not None
 
 #Validate sensors values (if its possible to convert into float)
